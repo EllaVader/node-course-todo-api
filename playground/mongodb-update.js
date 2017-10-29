@@ -27,7 +27,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
 
   //challenge - update name in users collection, increment age by one
   db.collection('Users').findOneAndUpdate({
-    name: 'Snickers'
+    _id: new ObjectID('59f513716fcd7106f50cc16b')
   }, {
     $set : {
       name: 'Janine'
