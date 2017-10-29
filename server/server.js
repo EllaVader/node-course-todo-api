@@ -12,27 +12,50 @@ mongoose.connect('mongodb://localhost:27017/TodoApp', {
 //create a mongoose model so it knows how to store our data
 var Todo = mongoose.model('Todo', {
   text: {
-    type: String
+    type: String,
+    required: true,
+    minlength: 1,
+    trim: true
   },
   completed: {
-    type: Boolean
+    type: Boolean,
+    default: false
   },
   completedAt: {
-    type: Number
+    type: Number,
+    default: null
   }
 });
 
-//create a new Todo object model
-var newTodo = new Todo({
-  text: 'Update checkbook',
-  completed: true,
-  completedAt: 10292017
+var User = mongoose.model('User', {
+  email: {
+    type: String,
+    required: true,
+    minlength: 1,
+    trim: true
+  }
+})
+
+var newUser = new User({
+  email: '  janine.roe@gmail.com  '
 });
 
+newUser.save().then((doc) => {
+  console.log('Saved new user', doc);
+}, (err) => {
+  console.log('Unble to save new user', err)
+})
+
+//create a new Todo object model. typecasting exists so if set a string with a Boolean
+//or a number it will cast it to a string.  it will not do it for objects though
+// var newTodo = new Todo({
+//   text: true
+// });
+
 //save object to DB
-newTodo.save().then((doc) => {
-  console.log('Saved todo', doc);
-},
-(err)=> {
-  console.log('Unable to save todo');
-});
+// newTodo.save().then((doc) => {
+//   console.log('Saved todo', doc);
+// },
+// (err)=> {
+//   console.log('Unable to save todo');
+// });
