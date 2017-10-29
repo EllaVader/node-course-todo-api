@@ -1,61 +1,39 @@
-var mongoose = require('mongoose');
+var express = require('express');
+//gets JSON and convert it into an object
+var bodyParser = require('body-parser');
 
-//tell mongoose we want to use the build in Promise library instead of a 3rd party one.
-mongoose.Promise = global.Promise;
+//using ES6 destructuring
+var {moongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 
-//similar to mongodb connect.  But takes care of the connection for us when
-//we make DB calls
-mongoose.connect('mongodb://localhost:27017/TodoApp', {
-  useMongoClient: true
+//1. our server
+var app = express();
+
+// set up middleware - app.use does processing when request is received.
+//this will store request in req.body
+app.use(bodyParser.json());
+
+//GET - requests data from a resource
+//POST - submits data to be processed to a resource
+
+//2. configure routes
+app.post('/todos', (req, res) => {
+  //create a new todo object from our request
+   var todo = new Todo({
+     text: req.body.text
+   });
+
+  //save the model to the  db
+  todo.save().then((doc) => {
+    //send the saved todo back
+    res.send(doc);
+  }, (err) => {
+    res.status(400).send(err);
+  });
 });
 
-//create a mongoose model so it knows how to store our data
-var Todo = mongoose.model('Todo', {
-  text: {
-    type: String,
-    required: true,
-    minlength: 1,
-    trim: true
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  completedAt: {
-    type: Number,
-    default: null
-  }
+//3. start server
+app.listen(3000, () => {
+  console.log('Started on port 3000');
 });
-
-var User = mongoose.model('User', {
-  email: {
-    type: String,
-    required: true,
-    minlength: 1,
-    trim: true
-  }
-})
-
-var newUser = new User({
-  email: '  janine.roe@gmail.com  '
-});
-
-newUser.save().then((doc) => {
-  console.log('Saved new user', doc);
-}, (err) => {
-  console.log('Unble to save new user', err)
-})
-
-//create a new Todo object model. typecasting exists so if set a string with a Boolean
-//or a number it will cast it to a string.  it will not do it for objects though
-// var newTodo = new Todo({
-//   text: true
-// });
-
-//save object to DB
-// newTodo.save().then((doc) => {
-//   console.log('Saved todo', doc);
-// },
-// (err)=> {
-//   console.log('Unable to save todo');
-// });
