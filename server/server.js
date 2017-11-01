@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 //POST - submits data to be processed to a resource
 
 //2. configure routes
+//POST
 app.post('/todos', (req, res) => {
   //create a new todo object from our request
    var todo = new Todo({
@@ -28,6 +29,16 @@ app.post('/todos', (req, res) => {
   todo.save().then((doc) => {
     //send the saved todo back
     res.send(doc);
+  }, (err) => {
+    res.status(400).send(err);
+  });
+});
+
+//GET all todos
+app.get('/todos', (req, res) => {
+  Todo.find().then((todos) => {  //returns a Promise, success callback and error callback
+    //the find returns an array of results, we want to convert it an object
+    res.send({todos});
   }, (err) => {
     res.status(400).send(err);
   });
