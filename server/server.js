@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var {moongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
+const {ObjectID} = require('mongodb');
 
 //1. our server
 var app = express();
@@ -34,13 +35,39 @@ app.post('/todos', (req, res) => {
   });
 });
 
-//GET all todos
+//GET all /todos
 app.get('/todos', (req, res) => {
-  Todo.find().then((todos) => {  //returns a Promise, success callback and error callback
-    //the find returns an array of results, we want to convert it an object
-    res.send({todos});
+  //then returns a Promise, success callback and error callback
+ //the find returns an array of results, we want to convert it an object
+  Todo.find().then((todos) => {
+    //stick the array of objects on an object that contains a todo property whose value is the todos array
+    //{todos: todos}
+    res.send({todo});
   }, (err) => {
     res.status(400).send(err);
+  });
+});
+
+//GET a specific /todo/{todoID}
+app.get('/todos/:id', (req, res) => { //create an ID variable on the request object
+  //res.send(req.params); //return the parameters so we can see them for now
+  var id = req.params.id //key value pairs (variable => value)
+  //validate that the id is valid using isValid
+  if(!ObjectID.isValid(id)){
+    //invalid object id, return 404
+    res.status(404).send();
+  }
+  //if valid id, query db using findById
+  Todo.findById(id).then((todo) => {
+    if(todo) {
+      //this returns an object that has a todo property, which has the todo object == {todo: todo}
+      //this allows us to add more things to this object if we wanted
+      res.send({todo})
+    } else {
+      res.status(404).send('Id not found');
+    }
+  }, () => {
+    res.status(400).send('DB error');
   });
 });
 
@@ -49,5 +76,5 @@ app.listen(3000, () => {
   console.log('Started on port 3000');
 });
 
-//so our test file can use it.
+//export app so our test file can use it.
 module.exports = {app};
