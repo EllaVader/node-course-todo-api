@@ -10,6 +10,8 @@ var {User} = require('./models/user');
 
 //1. our server
 var app = express();
+//needed for Heroku
+const port = process.env.PORT || 3000;
 
 // set up middleware - app.use does processing when request is received.
 //this will store request in req.body
@@ -72,8 +74,8 @@ app.get('/todos/:id', (req, res) => { //create an ID variable on the request obj
 });
 
 //3. start server
-app.listen(3000, () => {
-  console.log('Started on port 3000');
+app.listen(port, () => {
+  console.log(`Started on port ${port}`);
 });
 
 //export app so our test file can use it.
