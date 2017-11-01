@@ -1,12 +1,12 @@
 var express = require('express');
 //gets JSON and convert it into an object
 var bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
 //using ES6 destructuring
 var {moongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
-const {ObjectID} = require('mongodb');
 
 //1. our server
 var app = express();
@@ -42,7 +42,7 @@ app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     //stick the array of objects on an object that contains a todo property whose value is the todos array
     //{todos: todos}
-    res.send({todo});
+    res.send({todos});
   }, (err) => {
     res.status(400).send(err);
   });
@@ -64,10 +64,10 @@ app.get('/todos/:id', (req, res) => { //create an ID variable on the request obj
       //this allows us to add more things to this object if we wanted
       res.send({todo})
     } else {
-      res.status(404).send('Id not found');
+      res.status(404).send();
     }
   }, () => {
-    res.status(400).send('DB error');
+    res.status(400).send();
   });
 });
 
