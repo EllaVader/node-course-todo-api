@@ -8,27 +8,27 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
   console.log('Connected to MongoDB server');
 
   // deleteMany
-  // db.collection('Todos').deleteMany({text: 'Eat lunch'}).then((result) => {
-  //   console.log(result);
-  // });
+  db.collection('Todos').deleteMany({text: 'Eat lunch'}).then((result) => {
+    console.log(result);
+  });
 
   // deleteOne - the first one it finds
-  // db.collection('Todos').deleteOne({text: 'Eat lunch'}).then((result) => {
-  //   console.log(result);
-  // });
+  db.collection('Todos').deleteOne({text: 'Eat lunch'}).then((result) => {
+    console.log(result);
+  });
 
   //findOneAndDelete - returns the document back so you can display it
   // it's inside the value property of the object returned
-  // db.collection('Todos').findOneAndDelete({completed: false}).then((result) => {
-  //   console.log(result);
-  // });
+  db.collection('Todos').findOneAndDelete({completed: false}).then((result) => {
+    console.log(result);
+  });
 
   //challenge - deleteMany based on name, findOneAndDelete based on ID
 
   //delete many example
-  // db.collection('Users').deleteMany({name: 'Janine'}).then((result) => {
-  //   console.log(result);
-  // });
+  db.collection('Users').deleteMany({name: 'Janine'}).then((result) => {
+    console.log(result);
+  });
 
   //find one and delete example
   db.collection('Users').findOneAndDelete({
