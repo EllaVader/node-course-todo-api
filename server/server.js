@@ -50,26 +50,45 @@ app.get('/todos', (req, res) => {
   });
 });
 
-//GET a specific /todo/{todoID}
+//GET a specific /todo/:id
 app.get('/todos/:id', (req, res) => { //create an ID variable on the request object
   //res.send(req.params); //return the parameters so we can see them for now
   var id = req.params.id //key value pairs (variable => value)
+
   //validate that the id is valid using isValid
   if(!ObjectID.isValid(id)){
     //invalid object id, return 404
-    res.status(404).send();
+    return res.status(404).send();
   }
+
   //if valid id, query db using findById
   Todo.findById(id).then((todo) => {
-    if(todo) {
-      //this returns an object that has a todo property, which has the todo object == {todo: todo}
-      //this allows us to add more things to this object if we wanted
-      res.send({todo})
-    } else {
-      res.status(404).send();
+    if(!todo) {
+        return res.status(404).send();
     }
+    //this returns an object that has a todo property, which has the todo object == {todo: todo}
+    //this allows us to add more things to this object if we wanted
+    res.send({todo})
   }, () => {
     res.status(400).send();
+  });
+});
+
+//DELETE by id /todo/:id
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+  }
+
+  Todo.findByIdAndRemove(id).then((todo) => {
+    if(!todo) {
+      return res.status(404).send();
+    }
+    res.send({todo});
+  }).catch((e) => {
+    return res.status(400).send();
   });
 });
 
