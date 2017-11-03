@@ -1,3 +1,4 @@
+require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 //gets JSON and convert it into an object
@@ -12,7 +13,7 @@ const {User} = require('./models/user');
 //1. our server
 var app = express();
 //needed for Heroku
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // set up middleware - app.use does processing when request is received.
 //this will store request in req.body
