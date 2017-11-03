@@ -1,12 +1,13 @@
-var express = require('express');
+const _ = require('lodash');
+const express = require('express');
 //gets JSON and convert it into an object
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 
 //using ES6 destructuring
-var {moongoose} = require('./db/mongoose');
-var {Todo} = require('./models/todo');
-var {User} = require('./models/user');
+const {moongoose} = require('./db/mongoose');
+const {Todo} = require('./models/todo');
+const {User} = require('./models/user');
 
 //1. our server
 var app = express();
@@ -90,6 +91,40 @@ app.delete('/todos/:id', (req, res) => {
   }).catch((e) => {
     return res.status(400).send();
   });
+});
+
+//UPDATE a todo /todo/:id
+app.patch('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    //using lodash - since we will be updating the todo, we want to prevent
+    //the user from doing anything malcious.  And only updating the text property
+    //so use _.pick() - pick off the properties we want
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    if(!ObjectID.isValid(id)){
+      return res.status(404).send();
+    }
+
+    //check the completed property -
+    //if setting to completed, then update completedAt property
+    //if unsetting it to completed, clear the completedAt property
+    if(_.isBoolean(body.completed) && body.completed){ //body.completed == true
+      body.completedAt = new Date().getTime(); //javascript timestamp
+    } else {
+      body.completed = false;
+      body.completedAt = null;
+    }
+
+    //now update the DB
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) =>{
+      if(!todo){
+        return res.status(404).send();
+      }
+      res.send({todo});
+
+    }).catch((e) => {
+      res.status(400).send();
+    })
 });
 
 //3. start server
