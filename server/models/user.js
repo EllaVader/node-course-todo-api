@@ -44,7 +44,7 @@ UserSchema.methods.toJSON = function() {
 
 //create instance methods - not model methods - not an arrow function, becuase we need to bind 'this'
 UserSchema.methods.generateAuthToken = function() {
-  var user = this;
+  var user = this; //instance user
 
   var access = 'auth';
   //create the token using jwt
@@ -56,6 +56,27 @@ UserSchema.methods.generateAuthToken = function() {
     //to allow for chaining -- returning the auth token back
     return token;
   });
+};
+
+//create a model method
+UserSchema.statics.findByToken = function(token){
+  //verify token
+  var User = this; //model User
+  var decoded;
+
+  try{
+      decoded = jwt.verify(token, 'abc123');
+  } catch(e) {
+    return Promise.reject();
+  }
+
+  //find user
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  })
+  //return it
 };
 
 var User = mongoose.model('User', UserSchema);

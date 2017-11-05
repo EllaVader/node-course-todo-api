@@ -9,6 +9,7 @@ const {ObjectID} = require('mongodb');
 const {moongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+const {authenticate} = require('./middleware/authenticate');
 
 //1. our server
 var app = express();
@@ -141,10 +142,15 @@ app.post('/users', (req,res) => {
 
   }).then((token) => {
     //this now has the generateAuthToken value
-    res.header('x-auth', token).send(user); //x- custom header that contains the token
+    //set a header x- custom header that contains the token
+    res.header('x-auth', token).send(user);
   }).catch((e) => {
     res.status(400).send(e);
   })
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 //3. start server
