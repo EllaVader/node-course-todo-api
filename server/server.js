@@ -128,6 +128,25 @@ app.patch('/todos/:id', (req, res) => {
     })
 });
 
+// POST /users
+app.post('/users', (req,res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  //create a new user object from our request
+   var user = new User(body);
+
+  //save the model to the  db
+  user.save().then(() => {
+    //generate the auth token and return that value
+    return user.generateAuthToken();
+
+  }).then((token) => {
+    //this now has the generateAuthToken value
+    res.header('x-auth', token).send(user); //x- custom header that contains the token
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
+});
+
 //3. start server
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
